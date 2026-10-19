@@ -18,7 +18,7 @@ W, H, FPS = 1080, 1920, 30
 TARGET_TOTAL = 28
 MIN_SEC, MAX_SEC = 20, 35
 MIN_MEAN_DB = -45.0
-MAX_TRIES = 5
+MAX_TRIES = 6
 
 LOG = {"started": "", "recipe_id": None, "status": "running", "sources": [], "skipped_shots": [], "events": []}
 
@@ -73,6 +73,15 @@ def mean_volume(path):
     return float(m.group(1)) if m else None
 
 
+def black_lines(path, secs=None):
+    cmd = ["ffmpeg", "-hide_banner"]
+    if secs:
+        cmd += ["-t", str(secs)]
+    cmd += ["-i", str(path), "-an", "-vf", "blackdetect=d=0.3:pix_th=0.08", "-f", "null", "-"]
+    r = run(cmd)
+    return [l.strip() for l in r.stderr.splitlines() if "black_start" in l]
+
+
 def check_clip(path):
     if not has_audio(path):
         return False, "no audio stream"
@@ -81,6 +90,8 @@ def check_clip(path):
         return False, f"silent or too quiet ({vol})"
     if duration(path) < 3:
         return False, "too short"
+    if black_lines(path, secs=8):
+        return False, "black frames"
     return True, "ok"
 
 
@@ -133,10 +144,9 @@ def validate(path):
         vol = mean_volume(path)
         if vol is None or vol < -50:
             problems.append(f"audio silent ({vol})")
-    b = run(["ffmpeg", "-hide_banner", "-i", str(path), "-an",
-             "-vf", "blackdetect=d=0.5:pix_th=0.10", "-f", "null", "-"])
-    if "black_start" in b.stderr:
-        problems.append("black screen detected")
+    bl = black_lines(path)
+    if bl:
+        problems.append("black screen detected: " + bl[0][-90:])
     if path.stat().st_size > 100 * 1024 * 1024:
         problems.append("file larger than 100 MB")
     return problems
@@ -158,7 +168,7 @@ if not recipe:
 LOG["recipe_id"] = recipe["id"]
 log(f"Recipe {recipe['id']}: {recipe['name']}")
 
-# ---- 2. find a clip per shot (must have real audio) ----
+# ---- 2. find a clip per shot (must have real audio, no black frames) ----
 clips, used = [], set()
 for i, shot in enumerate(recipe["shots"], 1):
     found, tries = None, 0
@@ -204,10 +214,10 @@ for i, shot in enumerate(recipe["shots"], 1):
         log(f"shot {i}: no suitable clip with audio")
 
 if len(clips) < 3:
-    fail(f"only {len(clips)} usable clips with audio found (need 3+)")
+    fail(f"only {len(clips)} usable clips found (need 3+)")
 
 # ---- 3. edit ----
-seg = max(4.0, min(8.0, TARGET_TOTAL / len(clips)))
+seg = max(5.0, min(9.0, TARGET_TOTAL / len(clips)))
 segments = []
 for n, clip in enumerate(clips):
     dst = WORK / f"seg{n}.mp4"
@@ -231,8 +241,10 @@ if r.returncode != 0:
     fail("final encode failed: " + r.stderr[-400:])
 
 # ---- 4. validate ----
+total = duration(final)
 problems = validate(final)
 LOG["validation"] = problems or "passed"
+LOG["final_duration"] = round(total, 1)
 if problems:
     final.unlink(missing_ok=True)
     fail("validation failed: " + "; ".join(problems))
