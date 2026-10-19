@@ -1,21 +1,20 @@
 
-
 import os
 import random
 import subprocess
 import requests
 from pathlib import Path
 
-API_KEY = os.environ["PEXELS_API_KEY"]
+API_KEY = os.environ["PIXABAY_API_KEY"]
 OUT = Path("output")
 OUT.mkdir(exist_ok=True)
 
 QUERIES = [
-    "food frying close up",
-    "vegetables chopping close up",
-    "dough kneading cooking",
-    "chocolate pouring dessert",
-    "crispy food cooking pan"
+    "cooking food",
+    "food frying",
+    "vegetables chopping",
+    "baking dessert",
+    "cooking close up"
 ]
 
 def run(command):
@@ -24,37 +23,32 @@ def run(command):
 query = random.choice(QUERIES)
 
 response = requests.get(
-    "https://api.pexels.com/videos/search",
-    headers={"Authorization": API_KEY},
+    "https://pixabay.com/api/videos/",
     params={
-        "query": query,
-        "per_page": 20,
-        "orientation": "portrait"
+        "key": API_KEY,
+        "q": query,
+        "per_page": 20
     },
     timeout=30
 )
 response.raise_for_status()
-videos = response.json().get("videos", [])
+videos = response.json().get("hits", [])
 
 if not videos:
-    raise RuntimeError("No clips found.")
+    raise RuntimeError("No videos found for this search.")
 
 video = random.choice(videos)
-files = [
-    f for f in video.get("video_files", [])
-    if f.get("file_type") == "video/mp4"
-    and f.get("width", 0) > 0
-]
-
-if not files:
-    raise RuntimeError("No MP4 found.")
-
-source = min(
-    files,
-    key=lambda f: abs(f.get("width", 0) - 1080)
+video_files = video.get("videos", {})
+source = (
+    video_files.get("medium")
+    or video_files.get("small")
+    or video_files.get("large")
 )
 
-download = requests.get(source["link"], timeout=90)
+if not source or not source.get("url"):
+    raise RuntimeError("No downloadable video found.")
+
+download = requests.get(source["url"], timeout=90)
 download.raise_for_status()
 Path("source.mp4").write_bytes(download.content)
 
@@ -76,8 +70,8 @@ run([
 
 (OUT / "source.txt").write_text(
     f"Search: {query}\n"
-    f"Source page: {video.get('url', '')}\n"
-    f"Creator: {video.get('user', {}).get('name', '')}\n",
+    f"Pixabay video ID: {video.get('id', '')}\n"
+    f"Page: https://pixabay.com/videos/id-{video.get('id', '')}/\n",
     encoding="utf-8"
 )
 
