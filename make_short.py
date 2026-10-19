@@ -10,13 +10,15 @@ OUT = Path("output")
 OUT.mkdir(exist_ok=True)
 
 QUERIES = [
-    "cooking food",
-    "food frying",
-    "vegetables chopping",
-    "baking dessert",
-    "cooking close up"
+    "cinematic close up food frying in pan",
+    "macro knife chopping vegetables",
+    "close up crispy food sizzling",
+    "slow motion chocolate pouring dessert",
+    "close up dough kneading hands",
+    "cinematic cooking oil sizzling pan",
+    "macro cutting fresh vegetables",
+    "close up pouring sauce over food"
 ]
-
 def run(command):
     subprocess.run(command, check=True)
 
