@@ -60,7 +60,7 @@ run([
     "-vf",
     "scale=720:1280:force_original_aspect_ratio=increase,"
     "crop=720:1280,fps=30",
-    "-af", "loudnorm",
+    "-af", "highpass=f=80,lowpass=f=12000,loudnorm=I=-18:TP=-2:LRA=7",
     "-c:v", "libx264",
     "-preset", "veryfast",
     "-pix_fmt", "yuv420p",
