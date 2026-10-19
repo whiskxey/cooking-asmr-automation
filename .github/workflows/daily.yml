@@ -1,4 +1,3 @@
-
 name: Daily Cooking ASMR Short
 
 on:
@@ -29,10 +28,11 @@ jobs:
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
         run: python make_short.py
 
-      - name: Save generated video
+      - name: Save output
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cooking-asmr-short
+          name: chefverse-short
           path: output/
-          retention-days: 3
-          
+          retention-days: 7
+          if-no-files-found: ignore
