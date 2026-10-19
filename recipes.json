@@ -1,0 +1,38 @@
+[
+  {
+    "id": "R001",
+    "name": "Crispy Veg Spring Rolls",
+    "category": "crispy snacks",
+    "ingredients": ["cabbage", "carrot", "spring roll sheets", "soy sauce", "oil"],
+    "actions": ["chop vegetables", "stir-fry in hot pan", "roll filling in sheet", "deep fry", "break open crispy roll"],
+    "shots": ["knife chopping cabbage close-up", "veg hitting hot pan with steam", "hands rolling sheet", "rolls bubbling in oil", "crispy roll snapped in half"],
+    "sound_events": ["chopping", "sizzle", "soft rustle", "oil bubbling", "crunch"],
+    "prompt": "Cinematic close-up, UD Chef in black jacket with gold UD, hands only, dark premium kitchen, warm light, steam, vertical 9:16, no text, no music",
+    "audio": "synced cooking sounds only, no music, no speech",
+    "status": "pending"
+  },
+  {
+    "id": "R002",
+    "name": "Cheesy Garlic Noodles",
+    "category": "noodles and pasta",
+    "ingredients": ["noodles", "garlic", "butter", "chilli flakes", "cheese"],
+    "actions": ["boil noodles", "mince garlic", "melt butter in pan", "toss noodles", "grate cheese", "plate"],
+    "shots": ["noodles lifted from boiling water", "knife mincing garlic", "butter melting and sizzling", "noodles tossed in pan", "cheese melting on top"],
+    "sound_events": ["water boil", "chopping", "sizzle", "tossing", "soft melt"],
+    "prompt": "Cinematic close-up, UD Chef in black jacket with gold UD, hands only, dark premium kitchen, warm light, steam, vertical 9:16, no text, no music",
+    "audio": "synced cooking sounds only, no music, no speech",
+    "status": "pending"
+  },
+  {
+    "id": "R003",
+    "name": "Molten Chocolate Lava Cake",
+    "category": "desserts and chocolate",
+    "ingredients": ["dark chocolate", "butter", "eggs", "sugar", "flour"],
+    "actions": ["melt chocolate", "whisk batter", "pour into ramekin", "bake", "unmould", "cut to reveal molten centre"],
+    "shots": ["chocolate melting", "batter pouring", "cake unmoulded on plate", "spoon cutting open", "lava flowing"],
+    "sound_events": ["stirring", "pouring", "soft thud", "spoon cut", "slow pour"],
+    "prompt": "Cinematic close-up, UD Chef in black jacket with gold UD, hands only, dark premium kitchen, warm light, steam, vertical 9:16, no text, no music",
+    "audio": "synced cooking sounds only, no music, no speech",
+    "status": "pending"
+  }
+]
